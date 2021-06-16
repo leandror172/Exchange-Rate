@@ -15,8 +15,8 @@
 	<name>exchange_rate</name>
 	<description>Exchange rate calculator service</description>
 	<properties>
-		<java.version>16</java.version>
-		<repackage.classifier/>
+		<java.version>11</java.version> 
+		<repackage.classifier/> 
 		<spring-cloud.version>2020.0.3</spring-cloud.version>
 		<spring-native.version>0.10.0</spring-native.version>
 	</properties>
