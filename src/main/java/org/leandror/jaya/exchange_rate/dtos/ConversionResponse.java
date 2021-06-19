@@ -1,5 +1,7 @@
 package org.leandror.jaya.exchange_rate.dtos;
 
+import static org.leandror.jaya.exchange_rate.utils.Constants.JSON_LOCALDATETIME_FORMAT;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -26,7 +28,7 @@ public class ConversionResponse {
   private MonetaryAmount origin;
   private MonetaryAmount converted;
   private BigDecimal usedConversionRate;
-  @JsonFormat(pattern = "yyyy-MM-dd'T'hh:mm:ss")
+  @JsonFormat(pattern = JSON_LOCALDATETIME_FORMAT)
   private LocalDateTime transactionDate;
   @JsonIgnore
   private Map<String, BigDecimal> conversionRates;

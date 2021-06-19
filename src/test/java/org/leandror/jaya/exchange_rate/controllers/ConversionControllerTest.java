@@ -3,6 +3,9 @@ package org.leandror.jaya.exchange_rate.controllers;
 import static java.time.LocalDateTime.now;
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.hamcrest.CoreMatchers.is;
+import static org.leandror.jaya.exchange_rate.utils.Constants.CURRENCY_CODE_BR;
+import static org.leandror.jaya.exchange_rate.utils.Constants.CURRENCY_CODE_USD;
+import static org.leandror.jaya.exchange_rate.utils.Constants.JSON_LOCALDATETIME_FORMAT;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -58,15 +61,18 @@ class ConversionControllerTest {
   }
 
   @Test
-  void returnBadRequest_when_desiredCurrencyInvalid(@Random ConversionRequest payload) throws Exception {
+  void returnBadRequest_when_desiredCurrencyInvalid(@Random ConversionRequest payload)
+      throws Exception {
     mockMvc.perform(postConversionRequest(payload))
            .andExpect(status().isBadRequest())
            .andExpect(content().contentType(MediaType.APPLICATION_JSON));
   }
 
   @Test
-  void returnConversionResponseData_when_conversionIsOk(@Random UUID userId, @Random BigDecimal originAmount,
-                                                        @Random UUID transactionId, @Random BigDecimal convertedAmount,
+  void returnConversionResponseData_when_conversionIsOk(@Random UUID userId,
+                                                        @Random BigDecimal originAmount,
+                                                        @Random UUID transactionId,
+                                                        @Random BigDecimal convertedAmount,
                                                         @Random BigDecimal conversionRate)
       throws Exception {
 
@@ -84,8 +90,8 @@ class ConversionControllerTest {
            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
            .andExpect(jsonPath("$.transactionId").value(is(transactionId.toString())))
            .andExpect(jsonPath("$.converted.amount").value(is(convertedAmount)))
-           .andExpect(jsonPath("$.converted.currency").value(is("USD")))
-           .andExpect(jsonPath("$.transactionDate").value(is(transactionDate.format(ofPattern("yyyy-MM-dd'T'hh:mm:ss")))))
+           .andExpect(jsonPath("$.converted.currency").value(is(CURRENCY_CODE_USD)))
+           .andExpect(jsonPath("$.transactionDate").value(is(transactionDate.format(ofPattern(JSON_LOCALDATETIME_FORMAT)))))
            .andExpect(jsonPath("$.usedConversionRate").value(is(conversionRate)));
 
     verify(service, times(1)).convert(request);
@@ -94,13 +100,18 @@ class ConversionControllerTest {
   private ConversionRequest conversionRequest(UUID userId, BigDecimal originAmount) {
     return ConversionRequest.builder()
                             .withUserId(userId)
-                            .withDesiredCurrency("USD")
-                            .withOrigin(MonetaryAmount.builder().withAmount(originAmount).withCurrency("BRL").build())
+                            .withDesiredCurrency(CURRENCY_CODE_USD)
+                            .withOrigin(MonetaryAmount.builder()
+                                                      .withAmount(originAmount)
+                                                      .withCurrency(CURRENCY_CODE_BR)
+                                                      .build())
                             .build();
   }
 
-  private ConversionResponse conversionResponse(UUID userId, UUID transactionId, BigDecimal convertedAmount,
-                                                BigDecimal conversionRate, LocalDateTime transactionDate) {
+  private ConversionResponse conversionResponse(UUID userId, UUID transactionId,
+                                                BigDecimal convertedAmount,
+                                                BigDecimal conversionRate,
+                                                LocalDateTime transactionDate) {
     return ConversionResponse.builder()
                              .withTransactionId(transactionId)
                              .withUserId(userId)
@@ -108,7 +119,7 @@ class ConversionControllerTest {
                              .withUsedConversionRate(conversionRate)
                              .withConverted((MonetaryAmount.builder()
                                                            .withAmount(convertedAmount)
-                                                           .withCurrency("USD")
+                                                           .withCurrency(CURRENCY_CODE_USD)
                                                            .build()))
                              .build();
   }
