@@ -39,10 +39,4 @@ public class ErrorResponse {
     errors.add(new ValidationError(field, message));
   }
 
-  public void addValidationError(ValidationError validationError){
-    if(Objects.isNull(errors)){
-      errors = new ArrayList<>();
-    }
-    errors.add(validationError);
-  }
 }
