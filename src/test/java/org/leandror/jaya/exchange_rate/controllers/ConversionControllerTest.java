@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.UUID;
 
+import org.javamoney.moneta.Money;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -89,7 +90,10 @@ class ConversionControllerTest {
            .andExpect(status().isOk())
            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
            .andExpect(jsonPath("$.transactionId").value(is(transactionId.toString())))
-           .andExpect(jsonPath("$.converted.amount").value(is(convertedAmount)))
+           .andExpect(jsonPath("$.converted.amount").value(is(Money.of(convertedAmount,
+                                                                       request.getDesiredCurrency())
+                                                                   .getNumber()
+                                                                   .numberValueExact(BigDecimal.class))))
            .andExpect(jsonPath("$.converted.currency").value(is(CURRENCY_CODE_USD)))
            .andExpect(jsonPath("$.transactionDate").value(is(transactionDate.format(ofPattern(JSON_LOCALDATETIME_FORMAT)))))
            .andExpect(jsonPath("$.usedConversionRate").value(is(conversionRate)));
