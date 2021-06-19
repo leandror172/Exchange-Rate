@@ -5,6 +5,10 @@ import static java.math.BigDecimal.TEN;
 import static java.time.Instant.ofEpochMilli;
 import static java.time.LocalDateTime.ofInstant;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.leandror.jaya.exchange_rate.utils.Constants.CURRENCY_CODE_BR;
+import static org.leandror.jaya.exchange_rate.utils.Constants.CURRENCY_CODE_EUR;
+import static org.leandror.jaya.exchange_rate.utils.Constants.CURRENCY_CODE_USD;
+import static org.leandror.jaya.exchange_rate.utils.Constants.TIME_ZONE_UTC;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -40,10 +44,6 @@ class ConversionServiceImplTest {
 
   private static final BigDecimal RATE_BRL_TO_EUR = new BigDecimal(5);
   private static final BigDecimal RATE_USD_TO_EUR = new BigDecimal(2);
-  private static final String TIME_ZONE_UTC = "UTC";
-  private static final String CURRENCY_CODE_BR = "BRL";
-  private static final String CURRENCY_CODE_EUR = "EUR";
-  private static final String CURRENCY_CODE_USD = "USD";
 
   private ConversionService service;
   @Mock

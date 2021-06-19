@@ -4,6 +4,9 @@ import static java.time.Instant.ofEpochMilli;
 import static java.time.LocalDateTime.ofInstant;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
+import static org.leandror.jaya.exchange_rate.utils.Constants.ACCESS_KEY;
+import static org.leandror.jaya.exchange_rate.utils.Constants.CURRENCY_CODE_EUR;
+import static org.leandror.jaya.exchange_rate.utils.Constants.TIME_ZONE_UTC;
 
 import java.math.BigDecimal;
 import java.time.ZoneId;
@@ -18,13 +21,10 @@ import org.leandror.jaya.exchange_rate.dtos.RatesResponse;
 import org.leandror.jaya.exchange_rate.services.ConversionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.leandror.jaya.exchange_rate.utils.Constants;
 
 @Service
 public class ConversionServiceImpl implements ConversionService {
-
-  private static final String ACCESS_KEY = "1fd63924cc1c9198f08e8e5d928ba114";
-  private static final String TIME_ZONE_UTC = "UTC";
-  private static final String CURRENCY_CODE_EUR = "EUR";
 
   private ExchangeRatesApiClient client;
 
