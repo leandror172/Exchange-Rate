@@ -23,6 +23,7 @@ import org.leandror.jaya.exchange_rate.dtos.ConversionRequest;
 import org.leandror.jaya.exchange_rate.dtos.ConversionResponse;
 import org.leandror.jaya.exchange_rate.dtos.MonetaryAmount;
 import org.leandror.jaya.exchange_rate.dtos.RatesResponse;
+import org.leandror.jaya.exchange_rate.repositories.ConversionRepository;
 import org.leandror.jaya.exchange_rate.services.ConversionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,7 +36,7 @@ public class ConversionServiceImpl implements ConversionService {
   private ExchangeRatesApiClient client;
 
   @Autowired
-  public ConversionServiceImpl(ExchangeRatesApiClient client) {
+  public ConversionServiceImpl(ExchangeRatesApiClient client, ConversionRepository repository) {
     this.client = client;
   }
 
