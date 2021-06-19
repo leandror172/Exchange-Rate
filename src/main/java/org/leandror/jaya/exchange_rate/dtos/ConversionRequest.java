@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 @Builder(setterPrefix = "with")
 public class ConversionRequest {
 
-  private UUID userId;
+  private @NotNull UUID userId;
   private @Valid MonetaryAmount origin;
   @Schema(example = "USD")
   @NotNull
