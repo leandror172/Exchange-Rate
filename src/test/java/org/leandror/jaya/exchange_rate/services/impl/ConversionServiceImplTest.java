@@ -30,6 +30,7 @@ import org.leandror.jaya.exchange_rate.dtos.ConversionRequest;
 import org.leandror.jaya.exchange_rate.dtos.ConversionResponse;
 import org.leandror.jaya.exchange_rate.dtos.MonetaryAmount;
 import org.leandror.jaya.exchange_rate.dtos.RatesResponse;
+import org.leandror.jaya.exchange_rate.repositories.ConversionRepository;
 import org.leandror.jaya.exchange_rate.services.ConversionService;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -52,12 +53,14 @@ class ConversionServiceImplTest {
   private ConversionService service;
   @Mock
   private ExchangeRatesApiClient client;
+  @Mock
+  private ConversionRepository repository;
 
   @BeforeEach
   void setUp() throws Exception {
     brlValue = ONE.divide(RATE_USD_TO_BRL, BANKING_CALCULATION_SCALE, HALF_EVEN);
     MockitoAnnotations.openMocks(this);
-    service = new ConversionServiceImpl(client);
+    service = new ConversionServiceImpl(client, repository);
   }
 
   @AfterEach
@@ -65,8 +68,7 @@ class ConversionServiceImplTest {
   }
 
   @Test
-  void returnTransactionData_when_ConvertBRLToUSD(@Random UUID userId,
-                                                  @Random UUID transactionId) {
+  void returnTransactionData_when_ConvertBRLToUSD(@Random UUID userId) {
 
     ConversionRequest request = ConversionRequest.builder()
                                                  .withUserId(userId)
@@ -79,17 +81,43 @@ class ConversionServiceImplTest {
                                    ZoneId.of(TIME_ZONE_UTC));
     mockCallClientLatest(true, date);
 
-    ConversionResponse response = service.convert(request);
-    assertThat(response).isNotNull();
-    assertThat(response.getUserId()).isEqualTo(userId);
-//    assertThat(response.getTransactionId()).isEqualTo(transactionId);
-    assertThat(response.getTransactionDate()).isEqualTo(date);
-    assertThat(response.getUsedConversionRate()).isEqualTo(RATE_USD_TO_BRL);
-    assertThat(response.getConverted()).isNotNull();
-    assertThat(response.getConverted()).isEqualTo(buildMonetaryAmount(brlValue,
-                                                                      CURRENCY_CODE_BR));
+    ConversionResponse result = service.convert(request);
+    assertThat(result).isNotNull();
+    assertThat(result.getUserId()).isEqualTo(userId);
+    assertThat(result.getTransactionDate()).isEqualTo(date);
+    assertThat(result.getUsedConversionRate()).isEqualTo(RATE_USD_TO_BRL);
+    assertThat(result.getConverted()).isNotNull();
+    assertThat(result.getConverted()).isEqualTo(buildMonetaryAmount(brlValue,
+                                                                    CURRENCY_CODE_BR));
 
     verify(client, times(1)).latest(any());
+  }
+
+  @Test
+  void returnTransactionId_when_ConversionIsOk(@Random UUID userId,
+                                               @Random UUID transactionId) {
+
+    ConversionRequest request = ConversionRequest.builder()
+                                                 .withUserId(userId)
+                                                 .withDesiredCurrency(CURRENCY_CODE_BR)
+                                                 .withOrigin(buildMonetaryAmount(ONE,
+                                                                                 CURRENCY_CODE_USD))
+                                                 .build();
+    ConversionResponse response = ConversionResponse.builder()
+                                                    .withId(transactionId)
+                                                    .build();
+
+    mockCallClientLatest(true, ofInstant(ofEpochSecond(1624076343L),
+                                         ZoneId.of(TIME_ZONE_UTC)));
+    when(repository.save(any())).thenReturn(response);
+
+    ConversionResponse result = service.convert(request);
+    assertThat(result).isNotNull();
+    assertThat(result.getId()).isEqualTo(response.getId()
+                                                 .toString());
+
+    verify(client, times(1)).latest(any());
+    verify(repository, times(1)).save(any());
   }
 
   private MonetaryAmount buildMonetaryAmount(BigDecimal amount, String currency) {
