@@ -21,7 +21,6 @@ import org.leandror.jaya.exchange_rate.dtos.RatesResponse;
 import org.leandror.jaya.exchange_rate.services.ConversionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.leandror.jaya.exchange_rate.utils.Constants;
 
 @Service
 public class ConversionServiceImpl implements ConversionService {
@@ -42,14 +41,12 @@ public class ConversionServiceImpl implements ConversionService {
                                                                     request.getDesiredCurrency()))
                                           .map(responseFunctionMapper)
                                           .orElseThrow(() -> new RuntimeException());
-    Optional<BigDecimal> desiredCurrencyRate = ofNullable(response.getConversionRates()
-                                                                  .get(request.getDesiredCurrency()));
-    Optional<BigDecimal> originCurrencyRate = ofNullable(response.getConversionRates()
-                                                                 .get(request.getOrigin()
-                                                                             .getCurrency()));
     response = populateResponse(request, response,
-                                calculateCurrencyConversionRate(desiredCurrencyRate,
-                                                                originCurrencyRate));
+                                calculateCurrencyConversionRate(ofNullable(response.getConversionRates()
+                                                                                   .get(request.getDesiredCurrency())),
+                                                                ofNullable(response.getConversionRates()
+                                                                                   .get(request.getOrigin()
+                                                                                               .getCurrency()))));
     return response;
   }
 
