@@ -9,8 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @FeignClient(name = "rates", url = "http://api.exchangeratesapi.io/v1")
 public interface ExchangeRatesApiClient {
-  
+
   @RequestMapping(method = GET, value = "/latest")
-  RatesResponse latest(@PathVariable("access_key") String accessKey, @PathVariable String symbols);
+  RatesResponse latest(@PathVariable("access_key") String accessKey,
+                       @PathVariable String base, @PathVariable String symbols);
 
 }
