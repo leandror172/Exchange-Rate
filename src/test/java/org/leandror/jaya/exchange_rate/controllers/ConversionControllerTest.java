@@ -117,7 +117,7 @@ class ConversionControllerTest {
                                                 BigDecimal conversionRate,
                                                 LocalDateTime transactionDate) {
     return ConversionResponse.builder()
-                             .withTransactionId(transactionId)
+                             .withId(transactionId)
                              .withUserId(userId)
                              .withTransactionDate(transactionDate)
                              .withUsedConversionRate(conversionRate)

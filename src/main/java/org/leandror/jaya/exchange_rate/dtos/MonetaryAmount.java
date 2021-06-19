@@ -1,13 +1,17 @@
 package org.leandror.jaya.exchange_rate.dtos;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 
 import org.leandror.jaya.exchange_rate.validators.annotations.ValidCurrencyCode;
 import org.springframework.format.annotation.NumberFormat;
 import org.springframework.format.annotation.NumberFormat.Style;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -21,8 +25,14 @@ import lombok.RequiredArgsConstructor;
 @Schema
 @Builder(setterPrefix = "with")
 @RequiredArgsConstructor
+@AllArgsConstructor
 @JsonDeserialize(builder = MonetaryAmount.MonetaryAmountBuilder.class)
+@Entity
 public class MonetaryAmount {
+  
+  @JsonIgnore
+  @Id
+  private UUID id;
 
   @NotNull
   @NonNull
