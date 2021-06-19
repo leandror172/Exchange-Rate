@@ -86,7 +86,7 @@ class ConversionControllerTest {
            .andExpect(jsonPath("$.converted.amount").value(is(convertedAmount)))
            .andExpect(jsonPath("$.converted.currency").value(is("USD")))
            .andExpect(jsonPath("$.transactionDate").value(is(transactionDate.format(ofPattern("yyyy-MM-dd'T'hh:mm:ss")))))
-           .andExpect(jsonPath("$.conversionRate").value(is(conversionRate)));
+           .andExpect(jsonPath("$.usedConversionRate").value(is(conversionRate)));
 
     verify(service, times(1)).convert(request);
   }
