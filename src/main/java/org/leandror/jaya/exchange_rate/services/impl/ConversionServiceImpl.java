@@ -3,6 +3,7 @@ package org.leandror.jaya.exchange_rate.services.impl;
 import org.leandror.jaya.exchange_rate.apis.clients.ExchangeRatesApiClient;
 import org.leandror.jaya.exchange_rate.dtos.ConversionRequest;
 import org.leandror.jaya.exchange_rate.dtos.ConversionResponse;
+import org.leandror.jaya.exchange_rate.dtos.RatesResponse;
 import org.leandror.jaya.exchange_rate.services.ConversionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,7 @@ public class ConversionServiceImpl implements ConversionService {
   @Override
   public ConversionResponse convert(ConversionRequest requestPayload) {
     String symbols = null;
-    client.latest(accessKey, symbols);
+    RatesResponse latest = client.latest(accessKey, symbols);
     return null;
   }
 
