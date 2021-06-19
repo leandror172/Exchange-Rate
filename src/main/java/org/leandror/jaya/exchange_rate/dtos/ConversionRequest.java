@@ -2,6 +2,7 @@ package org.leandror.jaya.exchange_rate.dtos;
 
 import java.util.UUID;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.leandror.jaya.exchange_rate.validators.annotations.ValidCurrencyCode;
@@ -20,7 +21,7 @@ import lombok.NoArgsConstructor;
 public class ConversionRequest {
 
   private UUID userId;
-  private MonetaryAmount origin;
+  private @Valid MonetaryAmount origin;
   @Schema(example = "USD")
   @NotNull
   @ValidCurrencyCode
