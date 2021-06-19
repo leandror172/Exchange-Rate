@@ -105,7 +105,7 @@ class ConversionControllerTest {
                              .withTransactionId(transactionId)
                              .withUserId(userId)
                              .withTransactionDate(transactionDate)
-                             .withConversionRate(conversionRate)
+                             .withUsedConversionRate(conversionRate)
                              .withConverted((MonetaryAmount.builder()
                                                            .withAmount(convertedAmount)
                                                            .withCurrency("USD")
