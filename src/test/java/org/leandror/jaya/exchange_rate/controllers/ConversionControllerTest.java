@@ -62,9 +62,20 @@ class ConversionControllerTest {
   }
 
   @Test
-  void returnBadRequest_when_desiredCurrencyInvalid(@Random ConversionRequest payload)
+  void returnBadRequest_when_currencyInvalid(@Random UUID userId,
+                                             @Random BigDecimal originAmount,
+                                             @Random UUID transactionId,
+                                             @Random BigDecimal convertedAmount,
+                                             @Random BigDecimal conversionRate)
       throws Exception {
-    mockMvc.perform(postConversionRequest(payload))
+    ConversionRequest request = conversionRequest(userId, originAmount, "AAA",
+                                                  CURRENCY_CODE_BR);
+    mockMvc.perform(postConversionRequest(request))
+           .andExpect(status().isBadRequest())
+           .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+
+    request = conversionRequest(userId, originAmount, CURRENCY_CODE_BR, "AAA");
+    mockMvc.perform(postConversionRequest(request))
            .andExpect(status().isBadRequest())
            .andExpect(content().contentType(MediaType.APPLICATION_JSON));
   }
@@ -78,7 +89,9 @@ class ConversionControllerTest {
       throws Exception {
 
     LocalDateTime transactionDate = now(ZoneId.of("UTC"));
-    ConversionRequest request = conversionRequest(userId, originAmount);
+    ConversionRequest request = conversionRequest(userId, originAmount,
+                                                  CURRENCY_CODE_BR,
+                                                  CURRENCY_CODE_USD);
 
     when(service.convert(request)).thenReturn(conversionResponse(userId,
                                                                  transactionId,
@@ -101,13 +114,15 @@ class ConversionControllerTest {
     verify(service, times(1)).convert(request);
   }
 
-  private ConversionRequest conversionRequest(UUID userId, BigDecimal originAmount) {
+  private ConversionRequest conversionRequest(UUID userId, BigDecimal originAmount,
+                                              String originCurrency,
+                                              String desiredCurrency) {
     return ConversionRequest.builder()
                             .withUserId(userId)
-                            .withDesiredCurrency(CURRENCY_CODE_USD)
+                            .withDesiredCurrency(desiredCurrency)
                             .withOrigin(MonetaryAmount.builder()
                                                       .withAmount(originAmount)
-                                                      .withCurrency(CURRENCY_CODE_BR)
+                                                      .withCurrency(originCurrency)
                                                       .build())
                             .build();
   }
