@@ -34,10 +34,12 @@ import lombok.NonNull;
 public class ConversionServiceImpl implements ConversionService {
 
   private ExchangeRatesApiClient client;
+  private ConversionRepository repository;
 
   @Autowired
   public ConversionServiceImpl(ExchangeRatesApiClient client, ConversionRepository repository) {
     this.client = client;
+    this.repository = repository;
   }
 
   @Override
@@ -53,7 +55,7 @@ public class ConversionServiceImpl implements ConversionService {
                                                                 ofNullable(response.getConversionRates()
                                                                                    .get(request.getOrigin()
                                                                                                .getCurrency()))));
-    return response;
+    return repository.save(response);
   }
 
   private Map<String, String> createParamMap(ConversionRequest request) {

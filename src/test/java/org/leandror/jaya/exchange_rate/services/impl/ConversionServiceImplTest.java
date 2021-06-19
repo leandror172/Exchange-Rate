@@ -81,6 +81,7 @@ class ConversionServiceImplTest {
                                    ZoneId.of(TIME_ZONE_UTC));
     mockCallClientLatest(true, date);
 
+    when(repository.save(any())).thenAnswer(i -> i.getArguments()[0]);
     ConversionResponse result = service.convert(request);
     assertThat(result).isNotNull();
     assertThat(result.getUserId()).isEqualTo(userId);
@@ -113,8 +114,7 @@ class ConversionServiceImplTest {
 
     ConversionResponse result = service.convert(request);
     assertThat(result).isNotNull();
-    assertThat(result.getId()).isEqualTo(response.getId()
-                                                 .toString());
+    assertThat(result.getId()).isEqualTo(response.getId());
 
     verify(client, times(1)).latest(any());
     verify(repository, times(1)).save(any());
