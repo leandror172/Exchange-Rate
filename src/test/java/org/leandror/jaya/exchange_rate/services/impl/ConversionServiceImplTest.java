@@ -1,10 +1,11 @@
 package org.leandror.jaya.exchange_rate.services.impl;
 
 import static java.math.BigDecimal.ONE;
-import static java.math.BigDecimal.TEN;
-import static java.time.Instant.ofEpochMilli;
+import static java.math.RoundingMode.HALF_EVEN;
+import static java.time.Instant.ofEpochSecond;
 import static java.time.LocalDateTime.ofInstant;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.leandror.jaya.exchange_rate.utils.Constants.BANKING_CALCULATION_SCALE;
 import static org.leandror.jaya.exchange_rate.utils.Constants.CURRENCY_CODE_BR;
 import static org.leandror.jaya.exchange_rate.utils.Constants.CURRENCY_CODE_EUR;
 import static org.leandror.jaya.exchange_rate.utils.Constants.CURRENCY_CODE_USD;
@@ -42,8 +43,11 @@ import io.github.glytching.junit.extension.random.RandomBeansExtension;
 @SpringBootTest(classes = {})
 class ConversionServiceImplTest {
 
-  private static final BigDecimal RATE_BRL_TO_EUR = new BigDecimal(5);
-  private static final BigDecimal RATE_USD_TO_EUR = new BigDecimal(2);
+  private static final BigDecimal RATE_EUR_TO_BRL = new BigDecimal(6.039133);
+  private static final BigDecimal RATE_EUR_TO_USD = new BigDecimal(1.186435);
+  private static final BigDecimal RATE_USD_TO_BRL = new BigDecimal(0.1964578).setScale(BANKING_CALCULATION_SCALE,
+                                                                                       HALF_EVEN);
+  private BigDecimal brlValue;
 
   private ConversionService service;
   @Mock
@@ -51,6 +55,7 @@ class ConversionServiceImplTest {
 
   @BeforeEach
   void setUp() throws Exception {
+    brlValue = ONE.divide(RATE_USD_TO_BRL, BANKING_CALCULATION_SCALE, HALF_EVEN);
     MockitoAnnotations.openMocks(this);
     service = new ConversionServiceImpl(client);
   }
@@ -66,28 +71,26 @@ class ConversionServiceImplTest {
     ConversionRequest request = ConversionRequest.builder()
                                                  .withUserId(userId)
                                                  .withDesiredCurrency(CURRENCY_CODE_BR)
-                                                 .withOrigin(buildMonetaryAmount(TEN,
+                                                 .withOrigin(buildMonetaryAmount(ONE,
                                                                                  CURRENCY_CODE_USD))
                                                  .build();
 
-    LocalDateTime date = ofInstant(ofEpochMilli(1624076343L),
+    LocalDateTime date = ofInstant(ofEpochSecond(1624076343L),
                                    ZoneId.of(TIME_ZONE_UTC));
-    mockCallClientLatest(date);
+    mockCallClientLatest(true, date);
 
     ConversionResponse response = service.convert(request);
-
     assertThat(response).isNotNull();
     assertThat(response.getUserId()).isEqualTo(userId);
 //    assertThat(response.getTransactionId()).isEqualTo(transactionId);
     assertThat(response.getTransactionDate()).isEqualTo(date);
-    assertThat(response.getUsedConversionRate()).isEqualTo(RATE_USD_TO_EUR.divide(RATE_BRL_TO_EUR));
+    assertThat(response.getUsedConversionRate()).isEqualTo(RATE_USD_TO_BRL);
     assertThat(response.getConverted()).isNotNull();
-    assertThat(response.getConverted()).isEqualTo(buildMonetaryAmount(new BigDecimal(4.0).setScale(1),
+    assertThat(response.getConverted()).isEqualTo(buildMonetaryAmount(brlValue,
                                                                       CURRENCY_CODE_BR));
 
-    verify(client, times(1)).latest(any(), any(), any());
+    verify(client, times(1)).latest(any());
   }
-  
 
   private MonetaryAmount buildMonetaryAmount(BigDecimal amount, String currency) {
     return MonetaryAmount.builder()
@@ -96,19 +99,19 @@ class ConversionServiceImplTest {
                          .build();
   }
 
-  private void mockCallClientLatest(LocalDateTime date) {
+  private void mockCallClientLatest(boolean success, LocalDateTime date) {
 
-    when(client.latest(any(), any(), any())).thenReturn(RatesResponse.builder()
-                                                                     .withSuccess(true)
-                                                                     .withTimestamp(1624076343L)
-                                                                     .withDate(date.toLocalDate())
-                                                                     .withRates(Map.of(CURRENCY_CODE_BR,
-                                                                                       RATE_BRL_TO_EUR,
-                                                                                       CURRENCY_CODE_EUR,
-                                                                                       ONE,
-                                                                                       CURRENCY_CODE_USD,
-                                                                                       RATE_USD_TO_EUR))
-                                                                     .build());
+    when(client.latest(any())).thenReturn(RatesResponse.builder()
+                                                       .withSuccess(success)
+                                                       .withTimestamp(1624076343L)
+                                                       .withDate(date.toLocalDate())
+                                                       .withRates(Map.of(CURRENCY_CODE_BR,
+                                                                         RATE_EUR_TO_BRL,
+                                                                         CURRENCY_CODE_EUR,
+                                                                         ONE,
+                                                                         CURRENCY_CODE_USD,
+                                                                         RATE_EUR_TO_USD))
+                                                       .build());
   }
 
 }
