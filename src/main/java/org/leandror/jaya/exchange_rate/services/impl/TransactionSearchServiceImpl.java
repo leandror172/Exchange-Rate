@@ -21,12 +21,12 @@ public class TransactionSearchServiceImpl implements TransactionSearchService {
   }
 
   @Override
-  public Optional<List<ConversionResponse>> listAll() {
-    return Optional.ofNullable(repository.findAll());
+  public List<ConversionResponse> listAll() {
+    return repository.findAll();
   }
 
   @Override
-  public Optional<List<ConversionResponse>> listFromUser(UUID userId) {
+  public List<ConversionResponse> listFromUser(UUID userId) {
     return repository.findByUserId(userId);
   }
 }

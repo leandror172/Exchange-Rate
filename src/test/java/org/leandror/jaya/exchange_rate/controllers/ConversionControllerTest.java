@@ -2,7 +2,6 @@ package org.leandror.jaya.exchange_rate.controllers;
 
 import static java.time.LocalDateTime.now;
 import static java.time.format.DateTimeFormatter.ofPattern;
-import static java.util.Optional.empty;
 import static org.hamcrest.CoreMatchers.is;
 import static org.leandror.jaya.exchange_rate.utils.Constants.CURRENCY_CODE_BR;
 import static org.leandror.jaya.exchange_rate.utils.Constants.CURRENCY_CODE_USD;
@@ -20,7 +19,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.javamoney.moneta.Money;
@@ -89,7 +87,8 @@ class ConversionControllerTest {
                                                       conversionRate2,
                                                       transactionDate);
 
-    when(transactionSearchService.listAll()).thenReturn(Optional.of(List.of(response1, response2)));
+    when(transactionSearchService.listAll()).thenReturn(List.of(response1,
+                                                                response2));
 
     mockMvc.perform(get("/api/v1/conversions").contentType("application/json"))
            .andExpect(status().isOk())
@@ -126,9 +125,11 @@ class ConversionControllerTest {
                                                       conversionRate2,
                                                       transactionDate);
 
-    when(transactionSearchService.listFromUser(userId)).thenReturn(Optional.of(List.of(response1, response2)));
+    when(transactionSearchService.listFromUser(userId)).thenReturn(List.of(response1,
+                                                                           response2));
 
-    mockMvc.perform(get("/api/v1/conversions/users/{userId}", userId).contentType("application/json"))
+    mockMvc.perform(get("/api/v1/conversions/users/{userId}",
+                        userId).contentType("application/json"))
            .andExpect(status().isOk())
            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
            .andExpect(jsonPath("$[0].transactionId").value(is(transactionId1.toString())))
@@ -142,13 +143,15 @@ class ConversionControllerTest {
     verify(transactionSearchService, times(1)).listFromUser(userId);
 
   }
-  
+
   @Test
-  void returnNotFound_when_getEmptyTransactionsForUserid(@Random UUID userId) throws Exception {
+  void returnNotFound_when_getEmptyTransactionsForUserid(@Random UUID userId)
+      throws Exception {
 
-    when(transactionSearchService.listFromUser(userId)).thenReturn(empty());
+    when(transactionSearchService.listFromUser(userId)).thenReturn(List.of());
 
-    mockMvc.perform(get("/api/v1/conversions/users/{userId}", userId).contentType("application/json"))
+    mockMvc.perform(get("/api/v1/conversions/users/{userId}",
+                        userId).contentType("application/json"))
            .andExpect(status().isNotFound());
     verify(transactionSearchService, times(1)).listFromUser(userId);
   }
@@ -156,7 +159,7 @@ class ConversionControllerTest {
   @Test
   void returnNotFound_when_getEmptyTransactions() throws Exception {
 
-    when(transactionSearchService.listAll()).thenReturn(empty());
+    when(transactionSearchService.listAll()).thenReturn(List.of());
 
     mockMvc.perform(get("/api/v1/conversions").contentType("application/json"))
            .andExpect(status().isNotFound());
@@ -210,10 +213,10 @@ class ConversionControllerTest {
                                                   CURRENCY_CODE_USD);
 
     when(conversionService.convert(request)).thenReturn(conversionResponse(userId,
-                                                                 transactionId,
-                                                                 convertedAmount,
-                                                                 conversionRate,
-                                                                 transactionDate));
+                                                                           transactionId,
+                                                                           convertedAmount,
+                                                                           conversionRate,
+                                                                           transactionDate));
 
     mockMvc.perform(postConversionRequest(request))
            .andExpect(status().isOk())

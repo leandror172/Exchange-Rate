@@ -58,12 +58,11 @@ class TransactionSearchServiceImplTest {
                                                      .build();
     when(repository.findAll()).thenReturn(List.of(response1, response2));
 
-    Optional<List<ConversionResponse>> result = service.listAll();
+    List<ConversionResponse> result = service.listAll();
     assertThat(result).isNotNull();
-    assertThat(result.get()
-                     .size()).isEqualTo(2);
-    assertThat(result.get()).contains(response1);
-    assertThat(result.get()).contains(response2);
+    assertThat(result.size()).isEqualTo(2);
+    assertThat(result).contains(response1);
+    assertThat(result).contains(response2);
 
     verify(repository, times(1)).findAll();
   }
@@ -81,15 +80,14 @@ class TransactionSearchServiceImplTest {
                                                      .withId(transactionId2)
                                                      .withUserId(userId)
                                                      .build();
-    when(repository.findByUserId(userId)).thenReturn(Optional.of(List.of(response1,
-                                                                         response2)));
+    when(repository.findByUserId(userId)).thenReturn((List.of(response1,
+                                                              response2)));
 
-    Optional<List<ConversionResponse>> result = service.listFromUser(userId);
+    List<ConversionResponse> result = service.listFromUser(userId);
     assertThat(result).isNotNull();
-    assertThat(result.get()
-                     .size()).isEqualTo(2);
-    assertThat(result.get()).contains(response1);
-    assertThat(result.get()).contains(response2);
+    assertThat(result.size()).isEqualTo(2);
+    assertThat(result).contains(response1);
+    assertThat(result).contains(response2);
 
     verify(repository, times(1)).findByUserId(userId);
   }
@@ -99,7 +97,7 @@ class TransactionSearchServiceImplTest {
 
     when(repository.findAll()).thenReturn(null);
 
-    Optional<List<ConversionResponse>> result = service.listAll();
+    List<ConversionResponse> result = service.listAll();
     assertThat(result).isNotNull();
     assertThat(result.isEmpty()).isTrue();
 
