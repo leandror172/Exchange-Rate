@@ -13,6 +13,7 @@ import static org.leandror.jaya.exchange_rate.utils.Constants.TIME_ZONE_UTC;
 
 import java.math.BigDecimal;
 import java.time.ZoneId;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
@@ -44,6 +45,12 @@ public class ConversionServiceImpl implements ConversionService {
     this.repository = repository;
   }
 
+  @Override
+  public Optional<List<ConversionResponse>> listAll() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+  
   @Override
   public ConversionResponse convert(ConversionRequest request) {
     requireNonNull(request, "No exchange rate conversion informed");
@@ -111,4 +118,5 @@ public class ConversionServiceImpl implements ConversionService {
       return null;
     }
   };
+
 }

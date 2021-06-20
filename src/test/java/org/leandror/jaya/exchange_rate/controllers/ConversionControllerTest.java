@@ -2,6 +2,7 @@ package org.leandror.jaya.exchange_rate.controllers;
 
 import static java.time.LocalDateTime.now;
 import static java.time.format.DateTimeFormatter.ofPattern;
+import static java.util.Optional.empty;
 import static org.hamcrest.CoreMatchers.is;
 import static org.leandror.jaya.exchange_rate.utils.Constants.CURRENCY_CODE_BR;
 import static org.leandror.jaya.exchange_rate.utils.Constants.CURRENCY_CODE_USD;
@@ -9,6 +10,7 @@ import static org.leandror.jaya.exchange_rate.utils.Constants.JSON_LOCALDATETIME
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -17,6 +19,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.javamoney.moneta.Money;
@@ -59,6 +63,54 @@ class ConversionControllerTest {
 
   @AfterEach
   void tearDown() throws Exception {
+  }
+
+  @Test
+  void returnTransactionList_when_getTransactionsFromHistory(@Random UUID userId1,
+                                                             @Random UUID transactionId1,
+                                                             @Random BigDecimal convertedAmount1,
+                                                             @Random BigDecimal conversionRate1,
+                                                             @Random UUID userId2,
+                                                             @Random UUID transactionId2,
+                                                             @Random BigDecimal convertedAmount2,
+                                                             @Random BigDecimal conversionRate2)
+      throws Exception {
+
+    LocalDateTime transactionDate = now(ZoneId.of("UTC"));
+    ConversionResponse response1 = conversionResponse(userId1, transactionId1,
+                                                      convertedAmount1,
+                                                      conversionRate1,
+                                                      transactionDate);
+    ConversionResponse response2 = conversionResponse(userId2, transactionId2,
+                                                      convertedAmount2,
+                                                      conversionRate2,
+                                                      transactionDate);
+
+    when(service.listAll()).thenReturn(Optional.of(List.of(response1, response2)));
+
+    mockMvc.perform(get("/api/v1/conversions").contentType("application/json"))
+           .andExpect(status().isOk())
+           .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+           .andExpect(jsonPath("$[0].transactionId").value(is(transactionId1.toString())))
+           .andExpect(jsonPath("$[0].converted.currency").value(is(CURRENCY_CODE_USD)))
+           .andExpect(jsonPath("$[0].transactionDate").value(is(transactionDate.format(ofPattern(JSON_LOCALDATETIME_FORMAT)))))
+           .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+           .andExpect(jsonPath("$[1].transactionId").value(is(transactionId2.toString())))
+           .andExpect(jsonPath("$[1].converted.currency").value(is(CURRENCY_CODE_USD)))
+           .andExpect(jsonPath("$[1].transactionDate").value(is(transactionDate.format(ofPattern(JSON_LOCALDATETIME_FORMAT)))));
+
+    verify(service, times(1)).listAll();
+
+  }
+
+  @Test
+  void returnNotFound_when_getEmptyTransactions() throws Exception {
+
+    when(service.listAll()).thenReturn(empty());
+
+    mockMvc.perform(get("/api/v1/conversions").contentType("application/json"))
+           .andExpect(status().isNotFound());
+    verify(service, times(1)).listAll();
   }
 
   @Test
