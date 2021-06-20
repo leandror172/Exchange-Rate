@@ -22,7 +22,7 @@ public class ConversionRequest {
 
   private @NotNull UUID userId;
   private @Valid MonetaryAmount origin;
-  @Schema(example = "USD")
+  @Schema(example = "BRL")
   @NotNull
   @ValidCurrencyCode
   private String desiredCurrency;
