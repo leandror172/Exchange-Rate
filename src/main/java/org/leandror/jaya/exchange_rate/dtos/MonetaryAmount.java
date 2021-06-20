@@ -38,13 +38,11 @@ public class MonetaryAmount {
   private Long id;
 
   @NotNull
-  @NonNull
   @Schema(example = "99.96")
   @NumberFormat(style = Style.CURRENCY)
   private BigDecimal amount;
 
   @NotNull
-  @NonNull
   @Schema(example = "USD")
   @ValidCurrencyCode
   private String currency;
