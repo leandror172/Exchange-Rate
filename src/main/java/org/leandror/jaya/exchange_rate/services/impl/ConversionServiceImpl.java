@@ -53,8 +53,7 @@ public class ConversionServiceImpl implements ConversionService {
 
   @Override
   public Optional<List<ConversionResponse>> listFromUser(UUID userId) {
-    // TODO Auto-generated method stub
-    return Optional.empty();
+    return repository.findByUserId(userId);
   }
 
   @Override
