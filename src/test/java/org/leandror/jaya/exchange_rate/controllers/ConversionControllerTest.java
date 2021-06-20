@@ -95,17 +95,6 @@ class ConversionControllerTest {
   }
 
   @Test
-  void returnBadRequest_when_requestNull(@Random BigDecimal originAmount,
-                                         @Random UUID transactionId,
-                                         @Random BigDecimal convertedAmount,
-                                         @Random BigDecimal conversionRate)
-      throws Exception {
-    mockMvc.perform(postConversionRequest(null))
-           .andExpect(status().isBadRequest());
-
-  }
-
-  @Test
   void returnConversionResponseData_when_conversionIsOk(@Random UUID userId,
                                                         @Random BigDecimal originAmount,
                                                         @Random UUID transactionId,
