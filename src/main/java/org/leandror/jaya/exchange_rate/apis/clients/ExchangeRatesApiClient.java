@@ -13,6 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public interface ExchangeRatesApiClient {
 
   @RequestMapping(method = GET, value = "/latest")
-RatesResponse latest(@SpringQueryMap Map<String, String> params);
+  RatesResponse latest(@SpringQueryMap Map<String, String> params);
 
 }

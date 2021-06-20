@@ -10,24 +10,27 @@ import org.leandror.jaya.exchange_rate.validators.annotations.ValidCurrencyCode;
 
 import com.google.common.base.Strings;
 
-public class ValidCurrencyCodeValidator implements ConstraintValidator<ValidCurrencyCode, String> {
+public class ValidCurrencyCodeValidator
+    implements ConstraintValidator<ValidCurrencyCode, String> {
 
-    private Boolean isOptional;
+  private Boolean isOptional;
 
-    @Override
-    public void initialize(ValidCurrencyCode validCurrencyCode) {
-        this.isOptional = validCurrencyCode.optional();
+  @Override
+  public void initialize(ValidCurrencyCode validCurrencyCode) {
+    this.isOptional = validCurrencyCode.optional();
+  }
+
+  @Override
+  public boolean isValid(String value,
+                         ConstraintValidatorContext constraintValidatorContext) {
+    boolean containsIsoCode = false;
+
+    Set<Currency> currencies = Currency.getAvailableCurrencies();
+    try {
+      containsIsoCode = currencies.contains(Currency.getInstance(value));
+    } catch (IllegalArgumentException e) {
     }
-
-    @Override
-    public boolean isValid(String value, ConstraintValidatorContext constraintValidatorContext) {
-        boolean containsIsoCode = false;
-
-        Set<Currency> currencies = Currency.getAvailableCurrencies();
-        try {
-            containsIsoCode = currencies.contains(Currency.getInstance(value));
-        }catch(IllegalArgumentException e){
-        }
-        return isOptional ? (containsIsoCode || (Strings.isNullOrEmpty(value))) : containsIsoCode;
-    }
+    return isOptional ? (containsIsoCode || (Strings.isNullOrEmpty(value)))
+        : containsIsoCode;
+  }
 }

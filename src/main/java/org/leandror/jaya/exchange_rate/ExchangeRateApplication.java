@@ -11,8 +11,8 @@ import org.springframework.context.annotation.Import;
 @EnableFeignClients
 public class ExchangeRateApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(ExchangeRateApplication.class, args);
-	}
+  public static void main(String[] args) {
+    SpringApplication.run(ExchangeRateApplication.class, args);
+  }
 
 }

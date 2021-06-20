@@ -12,12 +12,16 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @ControllerAdvice
-public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
+public class RestResponseEntityExceptionHandler
+    extends ResponseEntityExceptionHandler {
 
   private ErrorResponse response = null;
 
-  protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers,
-                                                                HttpStatus status, WebRequest request) {
+  @Override
+  protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+                                                                HttpHeaders headers,
+                                                                HttpStatus status,
+                                                                WebRequest request) {
 
     response = new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
                                  "Invalid request data.");
@@ -25,7 +29,8 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
       ex.getFieldErrors()
         .stream()
         .forEach(error -> response.addValidationError(error.getField(),
-                                                      format(error.getDefaultMessage(), error.getRejectedValue())));
+                                                      format(error.getDefaultMessage(),
+                                                             error.getRejectedValue())));
     }
     return handleExceptionInternal(ex, response, headers, status, request);
   }

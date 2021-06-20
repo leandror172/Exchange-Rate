@@ -16,18 +16,19 @@ import org.leandror.jaya.exchange_rate.validators.ValidCurrencyCodeValidator;
 /**
  * Annotation to validate the ISO Currency code.
  *
- * @author based on code by Robin Raju {@linkplain https://gist.github.com/robinraju/8cba4fa3b22c34fda3cec73338ca460c}
+ * @author based on code by Robin Raju
+ *         {@linkplain https://gist.github.com/robinraju/8cba4fa3b22c34fda3cec73338ca460c}
  */
-@Target({FIELD, PARAMETER})
+@Target({ FIELD, PARAMETER })
 @Retention(RUNTIME)
 @Constraint(validatedBy = ValidCurrencyCodeValidator.class)
 @Documented
 public @interface ValidCurrencyCode {
-    String message() default "Currency code %s is invalid.";
+  String message() default "Currency code %s is invalid.";
 
-    Class<?>[] groups() default {};
+  Class<?>[] groups() default {};
 
-    Class<? extends Payload>[] payload() default {};
+  Class<? extends Payload>[] payload() default {};
 
-    boolean optional() default false;
+  boolean optional() default false;
 }

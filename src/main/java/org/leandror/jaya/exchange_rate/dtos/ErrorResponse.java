@@ -11,7 +11,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 /**
- * @author copied from {@linkplain https://reflectoring.io/spring-boot-exception-handling/}
+ * @author copied from
+ *         {@linkplain https://reflectoring.io/spring-boot-exception-handling/}
  *
  */
 @Getter
@@ -32,8 +33,8 @@ public class ErrorResponse {
     private final String message;
   }
 
-  public void addValidationError(String field, String message){
-    if(Objects.isNull(errors)){
+  public void addValidationError(String field, String message) {
+    if (Objects.isNull(errors)) {
       errors = new ArrayList<>();
     }
     errors.add(new ValidationError(field, message));

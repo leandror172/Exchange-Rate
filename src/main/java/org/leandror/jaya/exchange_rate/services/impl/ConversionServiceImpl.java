@@ -37,7 +37,8 @@ public class ConversionServiceImpl implements ConversionService {
   private ConversionRepository repository;
 
   @Autowired
-  public ConversionServiceImpl(ExchangeRatesApiClient client, ConversionRepository repository) {
+  public ConversionServiceImpl(ExchangeRatesApiClient client,
+      ConversionRepository repository) {
     this.client = client;
     this.repository = repository;
   }
