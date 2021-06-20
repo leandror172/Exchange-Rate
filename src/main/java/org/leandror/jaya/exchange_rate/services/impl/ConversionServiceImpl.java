@@ -47,8 +47,7 @@ public class ConversionServiceImpl implements ConversionService {
 
   @Override
   public Optional<List<ConversionResponse>> listAll() {
-    // TODO Auto-generated method stub
-    return null;
+    return Optional.ofNullable(repository.findAll());
   }
   
   @Override

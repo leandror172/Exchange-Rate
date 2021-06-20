@@ -18,7 +18,9 @@ import static org.mockito.Mockito.when;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.jupiter.api.AfterEach;
@@ -68,7 +70,43 @@ class ConversionServiceImplTest {
   }
 
   @Test
-  void returnTransactionData_when_ConvertBRLToUSD(@Random UUID userId) {
+  void returnTransactionList_when_findTransactions(@Random UUID userId1,
+                                                   @Random UUID transactionId1,
+                                                   @Random UUID userId2,
+                                                   @Random UUID transactionId2) {
+
+    ConversionResponse response1 = ConversionResponse.builder()
+                                                     .withId(transactionId1)
+                                                     .withUserId(userId1)
+                                                     .build();
+    ConversionResponse response2 = ConversionResponse.builder()
+                                                     .withId(transactionId2)
+                                                     .withUserId(userId2)
+                                                     .build();
+    when(repository.findAll()).thenReturn(List.of(response1, response2));
+
+    Optional<List<ConversionResponse>> result = service.listAll();
+    assertThat(result).isNotNull();
+    assertThat(result.get().size()).isEqualTo(2);
+    assertThat(result.get()).contains(response1);
+    assertThat(result.get()).contains(response2);
+
+    verify(repository, times(1)).findAll();
+  }
+
+  @Test
+  void returnNoTransactions_when_transactionsEmpty() {
+
+    when(repository.findAll()).thenReturn(null);
+
+    Optional<List<ConversionResponse>> result = service.listAll();
+    assertThat(result).isNotNull();
+    assertThat(result.isEmpty()).isTrue();
+
+    verify(repository, times(1)).findAll();
+  }
+  @Test
+  void returnTransactionData_when_convertBRLToUSD(@Random UUID userId) {
 
     ConversionRequest request = ConversionRequest.builder()
                                                  .withUserId(userId)
@@ -95,7 +133,7 @@ class ConversionServiceImplTest {
   }
 
   @Test
-  void returnTransactionId_when_ConversionIsOk(@Random UUID userId,
+  void returnTransactionId_when_conversionIsOk(@Random UUID userId,
                                                @Random UUID transactionId) {
 
     ConversionRequest request = ConversionRequest.builder()
