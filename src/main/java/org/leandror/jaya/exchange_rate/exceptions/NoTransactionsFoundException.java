@@ -10,15 +10,14 @@ public class NoTransactionsFoundException extends RuntimeException {
 
   private static final long serialVersionUID = 5239371985458940763L;
 
-  public NoTransactionsFoundException(String string) {
+  public NoTransactionsFoundException(final String string) {
     super(string);
   }
 
   public NoTransactionsFoundException() {
-    super();
   }
 
-  public NoTransactionsFoundException(String string, Object...args) {
+  public NoTransactionsFoundException(final String string, final Object... args) {
     super(format(string, args));
   }
 

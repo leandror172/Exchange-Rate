@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 public interface TransactionSearchService {
 
-  public List<ConversionResponse> listAll();
+  List<ConversionResponse> listAll();
 
-  public List<ConversionResponse> listFromUser(UUID userId);
+  List<ConversionResponse> listFromUser(UUID userId);
 }

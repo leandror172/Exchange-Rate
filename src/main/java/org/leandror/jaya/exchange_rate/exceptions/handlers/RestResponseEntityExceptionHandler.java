@@ -18,10 +18,10 @@ public class RestResponseEntityExceptionHandler
   private ErrorResponse response = null;
 
   @Override
-  protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
-                                                                HttpHeaders headers,
-                                                                HttpStatus status,
-                                                                WebRequest request) {
+  protected ResponseEntity<Object> handleMethodArgumentNotValid(final MethodArgumentNotValidException ex,
+                                                                final HttpHeaders headers,
+                                                                final HttpStatus status,
+                                                                final WebRequest request) {
 
     response = new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
                                  "Invalid request data.");
@@ -34,5 +34,4 @@ public class RestResponseEntityExceptionHandler
     }
     return handleExceptionInternal(ex, response, headers, status, request);
   }
-
 }

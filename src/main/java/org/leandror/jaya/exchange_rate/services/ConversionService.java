@@ -7,5 +7,5 @@ import org.springframework.stereotype.Service;
 @Service
 public interface ConversionService {
 
-  public ConversionResponse convert(ConversionRequest requestPayload);
+  ConversionResponse convert(ConversionRequest requestPayload);
 }

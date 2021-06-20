@@ -25,24 +25,24 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @RequestMapping("/api/v1/conversions")
 public class ConversionController {
 
-  private ConversionService conversionService;
-  private TransactionSearchService transactionSearchService;
+  private final ConversionService conversionService;
+  private final TransactionSearchService transactionSearchService;
 
   @Autowired
-  public ConversionController(ConversionService conversionService,
-      TransactionSearchService transactionSearchService) {
+  public ConversionController(final ConversionService conversionService,
+      final TransactionSearchService transactionSearchService) {
     this.conversionService = conversionService;
     this.transactionSearchService = transactionSearchService;
   }
 
   @PostMapping(produces = "application/json")
-  public ConversionResponse convert(@RequestBody @Valid @NotNull ConversionRequest requestPayload) {
+  public ConversionResponse convert(@RequestBody @Valid @NotNull final ConversionRequest requestPayload) {
     return conversionService.convert(requestPayload);
   }
 
   @GetMapping(produces = "application/json")
   public List<ConversionResponse> list() {
-    List<ConversionResponse> result = transactionSearchService.listAll();
+    final List<ConversionResponse> result = transactionSearchService.listAll();
     if (result.isEmpty()) {
       throw new NoTransactionsFoundException();
     }
@@ -50,8 +50,8 @@ public class ConversionController {
   }
 
   @GetMapping(path = "/users/{userId}", produces = "application/json")
-  public List<ConversionResponse> listForUser(@PathVariable @Schema(example = "3fa85f64-5717-4562-b3fc-2c963f66afa6") UUID userId) {
-    List<ConversionResponse> result = transactionSearchService.listFromUser(userId);
+  public List<ConversionResponse> listForUser(@PathVariable @Schema(example = "3fa85f64-5717-4562-b3fc-2c963f66afa6") final UUID userId) {
+    final List<ConversionResponse> result = transactionSearchService.listFromUser(userId);
     if (result.isEmpty()) {
       throw new NoTransactionsFoundException("No transactions for user %s",
                                              userId.toString());

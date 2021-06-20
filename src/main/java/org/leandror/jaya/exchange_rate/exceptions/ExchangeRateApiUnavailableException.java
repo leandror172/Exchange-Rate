@@ -8,12 +8,11 @@ public class ExchangeRateApiUnavailableException extends RuntimeException {
 
   private static final long serialVersionUID = 6239645399031433234L;
 
-  public ExchangeRateApiUnavailableException(String string) {
+  public ExchangeRateApiUnavailableException(final String string) {
     super(string);
   }
 
   public ExchangeRateApiUnavailableException() {
-    super();
   }
 
 }

@@ -1,7 +1,6 @@
 package org.leandror.jaya.exchange_rate.services.impl;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.leandror.jaya.exchange_rate.dtos.ConversionResponse;
@@ -13,10 +12,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class TransactionSearchServiceImpl implements TransactionSearchService {
 
-  private ConversionRepository repository;
+  private final ConversionRepository repository;
 
   @Autowired
-  public TransactionSearchServiceImpl(ConversionRepository repository) {
+  public TransactionSearchServiceImpl(final ConversionRepository repository) {
     this.repository = repository;
   }
 
@@ -26,7 +25,7 @@ public class TransactionSearchServiceImpl implements TransactionSearchService {
   }
 
   @Override
-  public List<ConversionResponse> listFromUser(UUID userId) {
+  public List<ConversionResponse> listFromUser(final UUID userId) {
     return repository.findByUserId(userId);
   }
 }

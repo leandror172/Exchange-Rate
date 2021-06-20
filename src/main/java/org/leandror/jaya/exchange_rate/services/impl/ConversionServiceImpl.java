@@ -13,10 +13,8 @@ import static org.leandror.jaya.exchange_rate.utils.Constants.TIME_ZONE_UTC;
 
 import java.math.BigDecimal;
 import java.time.ZoneId;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.function.Function;
 
 import org.javamoney.moneta.Money;
@@ -36,18 +34,18 @@ import lombok.NonNull;
 @Service
 public class ConversionServiceImpl implements ConversionService {
 
-  private ExchangeRatesApiClient client;
-  private ConversionRepository repository;
+  private final ExchangeRatesApiClient client;
+  private final ConversionRepository repository;
 
   @Autowired
-  public ConversionServiceImpl(ExchangeRatesApiClient client,
-      ConversionRepository repository) {
+  public ConversionServiceImpl(final ExchangeRatesApiClient client,
+      final ConversionRepository repository) {
     this.client = client;
     this.repository = repository;
   }
 
   @Override
-  public ConversionResponse convert(ConversionRequest request) {
+  public ConversionResponse convert(final ConversionRequest request) {
     requireNonNull(request, "No exchange rate conversion informed");
     createParamMap(request);
     ConversionResponse response = Optional.ofNullable(client.latest(createParamMap(request)))
@@ -62,23 +60,23 @@ public class ConversionServiceImpl implements ConversionService {
     return repository.save(response);
   }
 
-  private Map<String, String> createParamMap(ConversionRequest request) {
+  private Map<String, String> createParamMap(final ConversionRequest request) {
     return Map.of("access_key", ACCESS_KEY, "base", CURRENCY_CODE_EUR, "symbols",
                   join(",", request.getDesiredCurrency(), request.getOrigin()
                                                                  .getCurrency(),
                        CURRENCY_CODE_EUR));
   }
 
-  private BigDecimal calculateCurrencyConversionRate(Optional<BigDecimal> desiredCurrencyRate,
-                                                     Optional<BigDecimal> originCurrencyRate) {
+  private BigDecimal calculateCurrencyConversionRate(final Optional<BigDecimal> desiredCurrencyRate,
+                                                     final Optional<BigDecimal> originCurrencyRate) {
     return originCurrencyRate.orElseThrow(() -> new RuntimeException())
                              .divide(desiredCurrencyRate.orElseThrow(() -> new RuntimeException()),
                                      BANKING_CALCULATION_SCALE, HALF_EVEN);
   }
 
-  private ConversionResponse populateResponse(ConversionRequest request,
-                                              ConversionResponse response,
-                                              BigDecimal conversionRate) {
+  private ConversionResponse populateResponse(final ConversionRequest request,
+                                              final ConversionResponse response,
+                                              final BigDecimal conversionRate) {
     response.setConverted(MonetaryAmount.builder()
                                         .withAmount(calculateConversion(request,
                                                                         conversionRate))
@@ -90,8 +88,8 @@ public class ConversionServiceImpl implements ConversionService {
     return response;
   }
 
-  private @NonNull BigDecimal calculateConversion(ConversionRequest request,
-                                                  BigDecimal conversionRate) {
+  private @NonNull BigDecimal calculateConversion(final ConversionRequest request,
+                                                  final BigDecimal conversionRate) {
     return Money.of(request.getOrigin()
                            .getAmount(),
                     request.getOrigin()
@@ -109,9 +107,8 @@ public class ConversionServiceImpl implements ConversionService {
                                                               ZoneId.of(TIME_ZONE_UTC)))
                                .withConversionRates(rates.getRates())
                                .build();
-    } else {
-      return null;
     }
+    return null;
   };
 
 }

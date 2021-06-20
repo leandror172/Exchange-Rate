@@ -16,19 +16,19 @@ public class ValidCurrencyCodeValidator
   private Boolean isOptional;
 
   @Override
-  public void initialize(ValidCurrencyCode validCurrencyCode) {
+  public void initialize(final ValidCurrencyCode validCurrencyCode) {
     this.isOptional = validCurrencyCode.optional();
   }
 
   @Override
-  public boolean isValid(String value,
-                         ConstraintValidatorContext constraintValidatorContext) {
+  public boolean isValid(final String value,
+                         final ConstraintValidatorContext constraintValidatorContext) {
     boolean containsIsoCode = false;
 
-    Set<Currency> currencies = Currency.getAvailableCurrencies();
+    final Set<Currency> currencies = Currency.getAvailableCurrencies();
     try {
       containsIsoCode = currencies.contains(Currency.getInstance(value));
-    } catch (IllegalArgumentException e) {
+    } catch (final IllegalArgumentException e) {
     }
     return isOptional ? (containsIsoCode || (Strings.isNullOrEmpty(value)))
         : containsIsoCode;

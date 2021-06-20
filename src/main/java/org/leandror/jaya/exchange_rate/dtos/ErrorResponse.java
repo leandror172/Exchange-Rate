@@ -33,7 +33,7 @@ public class ErrorResponse {
     private final String message;
   }
 
-  public void addValidationError(String field, String message) {
+  public void addValidationError(final String field, final String message) {
     if (Objects.isNull(errors)) {
       errors = new ArrayList<>();
     }
