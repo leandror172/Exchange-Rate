@@ -11,7 +11,7 @@
 	</parent>
 	<groupId>org.leandror.jaya</groupId>
 	<artifactId>exchange_rate</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>exchange_rate</name>
 	<description>Exchange rate calculator service</description>
 	<properties>
