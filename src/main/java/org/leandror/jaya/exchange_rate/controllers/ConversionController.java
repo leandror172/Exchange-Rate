@@ -10,6 +10,7 @@ import org.leandror.jaya.exchange_rate.dtos.ConversionRequest;
 import org.leandror.jaya.exchange_rate.dtos.ConversionResponse;
 import org.leandror.jaya.exchange_rate.exceptions.NoTransactionsFoundException;
 import org.leandror.jaya.exchange_rate.services.ConversionService;
+import org.leandror.jaya.exchange_rate.services.TransactionSearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,29 +25,32 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @RequestMapping("/api/v1/conversions")
 public class ConversionController {
 
-  private ConversionService service;
+  private ConversionService conversionService;
+  private TransactionSearchService transactionSearchService;
 
   @Autowired
-  public ConversionController(ConversionService service) {
-    this.service = service;
+  public ConversionController(ConversionService conversionService,
+      TransactionSearchService transactionSearchService) {
+    this.conversionService = conversionService;
+    this.transactionSearchService = transactionSearchService;
   }
 
   @PostMapping(produces = "application/json")
   public ConversionResponse convert(@RequestBody @Valid @NotNull ConversionRequest requestPayload) {
-    return service.convert(requestPayload);
+    return conversionService.convert(requestPayload);
   }
 
   @GetMapping(produces = "application/json")
   public List<ConversionResponse> list() {
-    return service.listAll()
-                  .orElseThrow(() -> new NoTransactionsFoundException());
+    return transactionSearchService.listAll()
+                                   .orElseThrow(() -> new NoTransactionsFoundException());
   }
 
   @GetMapping(path = "/users/{userId}", produces = "application/json")
   public List<ConversionResponse> listForUser(@PathVariable @Schema(example = "3fa85f64-5717-4562-b3fc-2c963f66afa6") UUID userId) {
-    return service.listFromUser(userId)
-                  .orElseThrow(() -> new NoTransactionsFoundException("No transactions for user %s",
-                                                                      userId.toString()));
+    return transactionSearchService.listFromUser(userId)
+                                   .orElseThrow(() -> new NoTransactionsFoundException("No transactions for user %s",
+                                                                                       userId.toString()));
   }
 
 }

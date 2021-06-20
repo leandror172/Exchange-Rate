@@ -32,6 +32,7 @@ import org.leandror.jaya.exchange_rate.dtos.ConversionRequest;
 import org.leandror.jaya.exchange_rate.dtos.ConversionResponse;
 import org.leandror.jaya.exchange_rate.dtos.MonetaryAmount;
 import org.leandror.jaya.exchange_rate.services.ConversionService;
+import org.leandror.jaya.exchange_rate.services.TransactionSearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -55,7 +56,9 @@ class ConversionControllerTest {
   @Autowired
   ObjectMapper objectMapper;
   @MockBean
-  ConversionService service;
+  ConversionService conversionService;
+  @MockBean
+  TransactionSearchService transactionSearchService;
 
   @BeforeEach
   void setUp() throws Exception {
@@ -86,7 +89,7 @@ class ConversionControllerTest {
                                                       conversionRate2,
                                                       transactionDate);
 
-    when(service.listAll()).thenReturn(Optional.of(List.of(response1, response2)));
+    when(transactionSearchService.listAll()).thenReturn(Optional.of(List.of(response1, response2)));
 
     mockMvc.perform(get("/api/v1/conversions").contentType("application/json"))
            .andExpect(status().isOk())
@@ -99,7 +102,7 @@ class ConversionControllerTest {
            .andExpect(jsonPath("$[1].converted.currency").value(is(CURRENCY_CODE_USD)))
            .andExpect(jsonPath("$[1].transactionDate").value(is(transactionDate.format(ofPattern(JSON_LOCALDATETIME_FORMAT)))));
 
-    verify(service, times(1)).listAll();
+    verify(transactionSearchService, times(1)).listAll();
 
   }
 
@@ -123,7 +126,7 @@ class ConversionControllerTest {
                                                       conversionRate2,
                                                       transactionDate);
 
-    when(service.listFromUser(userId)).thenReturn(Optional.of(List.of(response1, response2)));
+    when(transactionSearchService.listFromUser(userId)).thenReturn(Optional.of(List.of(response1, response2)));
 
     mockMvc.perform(get("/api/v1/conversions/users/{userId}", userId).contentType("application/json"))
            .andExpect(status().isOk())
@@ -136,28 +139,28 @@ class ConversionControllerTest {
            .andExpect(jsonPath("$[1].converted.currency").value(is(CURRENCY_CODE_USD)))
            .andExpect(jsonPath("$[1].transactionDate").value(is(transactionDate.format(ofPattern(JSON_LOCALDATETIME_FORMAT)))));
 
-    verify(service, times(1)).listFromUser(userId);
+    verify(transactionSearchService, times(1)).listFromUser(userId);
 
   }
   
   @Test
   void returnNotFound_when_getEmptyTransactionsForUserid(@Random UUID userId) throws Exception {
 
-    when(service.listFromUser(userId)).thenReturn(empty());
+    when(transactionSearchService.listFromUser(userId)).thenReturn(empty());
 
     mockMvc.perform(get("/api/v1/conversions/users/{userId}", userId).contentType("application/json"))
            .andExpect(status().isNotFound());
-    verify(service, times(1)).listFromUser(userId);
+    verify(transactionSearchService, times(1)).listFromUser(userId);
   }
 
   @Test
   void returnNotFound_when_getEmptyTransactions() throws Exception {
 
-    when(service.listAll()).thenReturn(empty());
+    when(transactionSearchService.listAll()).thenReturn(empty());
 
     mockMvc.perform(get("/api/v1/conversions").contentType("application/json"))
            .andExpect(status().isNotFound());
-    verify(service, times(1)).listAll();
+    verify(transactionSearchService, times(1)).listAll();
   }
 
   @Test
@@ -206,7 +209,7 @@ class ConversionControllerTest {
                                                   CURRENCY_CODE_BR,
                                                   CURRENCY_CODE_USD);
 
-    when(service.convert(request)).thenReturn(conversionResponse(userId,
+    when(conversionService.convert(request)).thenReturn(conversionResponse(userId,
                                                                  transactionId,
                                                                  convertedAmount,
                                                                  conversionRate,
@@ -224,7 +227,7 @@ class ConversionControllerTest {
            .andExpect(jsonPath("$.transactionDate").value(is(transactionDate.format(ofPattern(JSON_LOCALDATETIME_FORMAT)))))
            .andExpect(jsonPath("$.usedConversionRate").value(is(conversionRate)));
 
-    verify(service, times(1)).convert(request);
+    verify(conversionService, times(1)).convert(request);
   }
 
   private ConversionRequest conversionRequest(UUID userId, BigDecimal originAmount,

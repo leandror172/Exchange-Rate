@@ -47,16 +47,6 @@ public class ConversionServiceImpl implements ConversionService {
   }
 
   @Override
-  public Optional<List<ConversionResponse>> listAll() {
-    return Optional.ofNullable(repository.findAll());
-  }
-
-  @Override
-  public Optional<List<ConversionResponse>> listFromUser(UUID userId) {
-    return repository.findByUserId(userId);
-  }
-
-  @Override
   public ConversionResponse convert(ConversionRequest request) {
     requireNonNull(request, "No exchange rate conversion informed");
     createParamMap(request);
