@@ -6,7 +6,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.jupiter.api.AfterEach;
@@ -95,12 +94,24 @@ class TransactionSearchServiceImplTest {
   @Test
   void returnNoTransactions_when_transactionsEmpty() {
 
-    when(repository.findAll()).thenReturn(null);
+    when(repository.findAll()).thenReturn(List.of());
 
     List<ConversionResponse> result = service.listAll();
     assertThat(result).isNotNull();
     assertThat(result.isEmpty()).isTrue();
 
     verify(repository, times(1)).findAll();
+  }
+
+  @Test
+  void returnNoTransactions_when_transactionsForUserIdIsEmpty(@Random UUID userId) {
+
+    when(repository.findByUserId(userId)).thenReturn(List.of());
+
+    List<ConversionResponse> result = service.listFromUser(userId);
+    assertThat(result).isNotNull();
+    assertThat(result.isEmpty()).isTrue();
+
+    verify(repository, times(1)).findByUserId(userId);
   }
 }
