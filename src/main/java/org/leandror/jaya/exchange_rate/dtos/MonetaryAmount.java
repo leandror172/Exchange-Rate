@@ -1,10 +1,11 @@
 package org.leandror.jaya.exchange_rate.dtos;
 
 import java.math.BigDecimal;
-import java.util.UUID;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import org.leandror.jaya.exchange_rate.validators.annotations.ValidCurrencyCode;
@@ -28,11 +29,13 @@ import lombok.RequiredArgsConstructor;
 @AllArgsConstructor
 @JsonDeserialize(builder = MonetaryAmount.MonetaryAmountBuilder.class)
 @Entity
+@Table(name = "monetary_amount")
 public class MonetaryAmount {
-  
-  @JsonIgnore
+
   @Id
-  private UUID id;
+  @GeneratedValue
+  @JsonIgnore
+  private Long id;
 
   @NotNull
   @NonNull

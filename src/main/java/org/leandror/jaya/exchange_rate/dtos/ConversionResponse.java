@@ -7,14 +7,15 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.MapKeyColumn;
-import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -39,21 +40,25 @@ public class ConversionResponse {
 
   @Id
   @JsonProperty("transactionId")
+  @GeneratedValue
   private UUID id;
   private UUID userId;
-  @OneToOne
-  @MapsId
+
+  @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, optional = false)
+  @JoinColumn(name = "origin_id", unique = true, nullable = false)
   private MonetaryAmount origin;
-  @OneToOne
-  @MapsId
+
+  @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, optional = false)
+  @JoinColumn(name = "converted_id", unique = true, nullable = false)
   private MonetaryAmount converted;
+
   private BigDecimal usedConversionRate;
+
   @JsonFormat(pattern = JSON_LOCALDATETIME_FORMAT)
   private LocalDateTime transactionDate;
+
   @JsonIgnore
   @ElementCollection
-//  @CollectionTable(name = "conversion_rates_mapping", joinColumns = {
-//      @JoinColumn(name = "conversion_id", referencedColumnName = "id") })
   @MapKeyColumn(name = "currency")
   @Column(name = "rate")
   @CollectionTable(name = "conversion_rates_mapping")
