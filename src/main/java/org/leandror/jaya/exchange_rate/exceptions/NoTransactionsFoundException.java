@@ -1,5 +1,7 @@
 package org.leandror.jaya.exchange_rate.exceptions;
 
+import static java.lang.String.format;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
@@ -14,6 +16,10 @@ public class NoTransactionsFoundException extends RuntimeException {
 
   public NoTransactionsFoundException() {
     super();
+  }
+
+  public NoTransactionsFoundException(String string, Object...args) {
+    super(format(string, args));
   }
 
 }

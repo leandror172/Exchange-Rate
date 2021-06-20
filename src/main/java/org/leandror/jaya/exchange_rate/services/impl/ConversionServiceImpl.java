@@ -16,6 +16,7 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Function;
 
 import org.javamoney.moneta.Money;
@@ -49,7 +50,13 @@ public class ConversionServiceImpl implements ConversionService {
   public Optional<List<ConversionResponse>> listAll() {
     return Optional.ofNullable(repository.findAll());
   }
-  
+
+  @Override
+  public Optional<List<ConversionResponse>> listFromUser(UUID userId) {
+    // TODO Auto-generated method stub
+    return Optional.empty();
+  }
+
   @Override
   public ConversionResponse convert(ConversionRequest request) {
     requireNonNull(request, "No exchange rate conversion informed");

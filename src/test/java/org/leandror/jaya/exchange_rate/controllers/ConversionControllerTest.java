@@ -104,6 +104,53 @@ class ConversionControllerTest {
   }
 
   @Test
+  void returnTransactionList_when_getTransactionsForUserId(@Random UUID userId,
+                                                           @Random UUID transactionId1,
+                                                           @Random BigDecimal convertedAmount1,
+                                                           @Random BigDecimal conversionRate1,
+                                                           @Random UUID transactionId2,
+                                                           @Random BigDecimal convertedAmount2,
+                                                           @Random BigDecimal conversionRate2)
+      throws Exception {
+
+    LocalDateTime transactionDate = now(ZoneId.of("UTC"));
+    ConversionResponse response1 = conversionResponse(userId, transactionId1,
+                                                      convertedAmount1,
+                                                      conversionRate1,
+                                                      transactionDate);
+    ConversionResponse response2 = conversionResponse(userId, transactionId2,
+                                                      convertedAmount2,
+                                                      conversionRate2,
+                                                      transactionDate);
+
+    when(service.listFromUser(userId)).thenReturn(Optional.of(List.of(response1, response2)));
+
+    mockMvc.perform(get("/api/v1/conversions/users/{userId}", userId).contentType("application/json"))
+           .andExpect(status().isOk())
+           .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+           .andExpect(jsonPath("$[0].transactionId").value(is(transactionId1.toString())))
+           .andExpect(jsonPath("$[0].converted.currency").value(is(CURRENCY_CODE_USD)))
+           .andExpect(jsonPath("$[0].transactionDate").value(is(transactionDate.format(ofPattern(JSON_LOCALDATETIME_FORMAT)))))
+           .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+           .andExpect(jsonPath("$[1].transactionId").value(is(transactionId2.toString())))
+           .andExpect(jsonPath("$[1].converted.currency").value(is(CURRENCY_CODE_USD)))
+           .andExpect(jsonPath("$[1].transactionDate").value(is(transactionDate.format(ofPattern(JSON_LOCALDATETIME_FORMAT)))));
+
+    verify(service, times(1)).listFromUser(userId);
+
+  }
+  
+  @Test
+  void returnNotFound_when_getEmptyTransactionsForUserid(@Random UUID userId) throws Exception {
+
+    when(service.listFromUser(userId)).thenReturn(empty());
+
+    mockMvc.perform(get("/api/v1/conversions/users/{userId}", userId).contentType("application/json"))
+           .andExpect(status().isNotFound());
+    verify(service, times(1)).listFromUser(userId);
+  }
+
+  @Test
   void returnNotFound_when_getEmptyTransactions() throws Exception {
 
     when(service.listAll()).thenReturn(empty());
