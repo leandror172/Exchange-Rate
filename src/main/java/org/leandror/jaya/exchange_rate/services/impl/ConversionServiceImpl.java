@@ -23,6 +23,7 @@ import org.leandror.jaya.exchange_rate.dtos.ConversionRequest;
 import org.leandror.jaya.exchange_rate.dtos.ConversionResponse;
 import org.leandror.jaya.exchange_rate.dtos.MonetaryAmount;
 import org.leandror.jaya.exchange_rate.dtos.RatesResponse;
+import org.leandror.jaya.exchange_rate.exceptions.ExchangeRateApiUnavailableException;
 import org.leandror.jaya.exchange_rate.repositories.ConversionRepository;
 import org.leandror.jaya.exchange_rate.services.ConversionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +50,7 @@ public class ConversionServiceImpl implements ConversionService {
     createParamMap(request);
     ConversionResponse response = Optional.ofNullable(client.latest(createParamMap(request)))
                                           .map(responseFunctionMapper)
-                                          .orElseThrow(() -> new RuntimeException());
+                                          .orElseThrow(() -> new ExchangeRateApiUnavailableException());
     response = populateResponse(request, response,
                                 calculateCurrencyConversionRate(ofNullable(response.getConversionRates()
                                                                                    .get(request.getDesiredCurrency())),
